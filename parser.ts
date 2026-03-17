@@ -124,7 +124,7 @@ async function main() {
         console.log(`Documents added to index queue! Task ID: ${task.taskUid}`);
 
         console.log("Waiting for indexing to complete...");
-        await client.waitForTask(task.taskUid);
+        await (client as any).waitForTask(task.taskUid);
         console.log("Indexing finished successfully!");
 
     } catch (e: any) {

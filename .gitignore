@@ -1,0 +1,12 @@
+meilisearch.exe
+meilisearch_retry.exe
+node_modules/
+category_sample.xml
+check_a004.ts
+check_data.ts
+inspect_categories.ts
+search_test.ts
+out.txt
+parser.js
+.gemini/
+.agents/

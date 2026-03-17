@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hadex Search - Modern</title>
+
+    <!-- Tailwind CSS Pro Dazzling Visuals -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- InstantSearch styles (Minimal/Headless) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.3.1/themes/satellite-min.css" />
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style type="text/tailwindcss">
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+            color: #2d3748;
+        }
+
+        /* Hadex Brand Red */
+        .text-hadex-red { color: #cc3333; }
+        .bg-hadex-red { background-color: #cc3333; }
+        .border-hadex-red { border-color: #cc3333; }
+
+        .ais-SearchBox-form {
+            @apply flex w-full h-12 rounded-lg bg-white shadow-sm border border-gray-300 overflow-hidden relative transition-all focus-within:ring-2 focus-within:ring-red-500/20 focus-within:border-red-500;
+        }
+
+        .ais-SearchBox-input {
+            @apply w-full h-full pl-12 pr-10 text-base bg-transparent border-none outline-none text-gray-800 placeholder-gray-400;
+        }
+
+        .ais-SearchBox-submit {
+            @apply absolute left-4 top-1/2 -translate-y-1/2 text-gray-400;
+        }
+
+        .ais-SearchBox-submitIcon {
+            @apply w-5 h-5;
+            fill: currentColor;
+        }
+
+        .ais-RefinementList-label {
+            @apply flex items-center cursor-pointer w-full text-sm text-gray-700 hover:text-red-600 transition-colors py-1;
+        }
+
+        .ais-RefinementList-checkbox {
+            @apply mr-3 w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer;
+        }
+
+        .ais-RefinementList-count {
+            @apply ml-auto text-[10px] text-gray-400 font-medium;
+        }
+
+        .ais-Hits-list {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 1.5rem;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        @media (min-width: 640px) {
+            .ais-Hits-list {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .ais-Hits-list {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        .ais-Hits-item {
+            @apply flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 p-4 transition-all duration-300 hover:shadow-lg relative overflow-hidden;
+            min-width: 0;
+        }
+
+        /* SVG fixes */
+        svg { max-width: 100%; max-height: 100%; }
+        
+        .quantity-btn {
+            @apply w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors;
+        }
+        
+        .add-to-cart-btn {
+            @apply bg-[#cc3333] text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-red-700 transition-colors flex-1 text-center;
+        }
+
+        .price-table {
+            @apply w-full text-[10px] mt-4 mb-4 border-collapse;
+        }
+        .price-table th {
+            @apply text-left font-normal text-gray-400 pb-1;
+        }
+        .price-table td {
+            @apply font-bold text-gray-700;
+        }
+        .price-table .highlight {
+            @apply text-[#cc3333];
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+
+        .category-item {
+            @apply flex flex-col items-center p-3 bg-white border border-gray-100 rounded-lg hover:shadow-md transition-all cursor-pointer text-center min-h-[100px] justify-center;
+        }
+        .category-item .icon-wrapper {
+            @apply mb-2 text-gray-400 group-hover:text-[#cc3333] transition-colors;
+        }
+        .category-item span {
+            @apply text-[11px] font-bold text-gray-700 leading-tight;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen text-gray-800 antialiased selection:bg-blue-200">
+
+    <!-- Hadex Hlavička -->
+    <header class="bg-[#1a202c] shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Horní lišta s logem a hledáním -->
+            <div class="flex flex-col md:flex-row items-center py-4 gap-6">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <img src="https://www.hadex.cz/img/logo_small_w.png" alt="Hadex" class="h-8 w-auto" onerror="this.src='https://via.placeholder.com/150x40?text=HADEX'"/>
+                </div>
+
+                <!-- Hledání -->
+                <div class="flex-1 w-full max-w-2xl" id="searchbox"></div>
+                
+                <!-- Info / Košík (Placeholder) -->
+                <div class="hidden lg:flex items-center gap-6 text-white text-xs">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-[#cc3333] flex items-center justify-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bold">Položky: 100</p>
+                            <p class="text-red-400">Cena: 48,40 Kč</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Menu lišta -->
+            <div class="flex items-center gap-4 py-3 border-t border-gray-700">
+                <button class="bg-[#cc3333] text-white px-6 py-2 rounded font-bold text-sm flex items-center gap-2 uppercase tracking-wide">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    Katalog
+                </button>
+                <nav class="hidden md:flex gap-6 text-white text-sm font-medium">
+                    <a href="#" class="hover:text-red-400 transition-colors">Jak nakupovat</a>
+                    <a href="#" class="hover:text-red-400 transition-colors">Obchodní podmínky</a>
+                    <a href="#" class="hover:text-red-400 transition-colors">Reklamace</a>
+                    <a href="#" class="hover:text-red-400 transition-colors">Doprava</a>
+                    <a href="#" class="hover:text-red-400 transition-colors">Kontakty</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hlavní Obsah -->
+    <main
+        class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row gap-8 relative items-start">
+
+        <!-- Levý panel: Filtry -->
+        <aside class="w-full md:w-72 flex-shrink-0 md:sticky md:top-32 space-y-6 hidden md:block">
+            <!-- Kategorie -->
+            <div
+                class="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-50 transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+                <div class="flex items-center gap-2 mb-4 border-b border-gray-100 pb-3">
+                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
+                        </path>
+                    </svg>
+                    <h3 class="text-sm font-bold text-gray-900 uppercase tracking-widest">Kategorie</h3>
+                </div>
+                <div id="category-refinement-list" class="max-h-80 overflow-y-auto pr-2 custom-scrollbar"></div>
+            </div>
+
+            <!-- Značka -->
+            <div
+                class="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-50 transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+                <div class="flex items-center gap-2 mb-4 border-b border-gray-100 pb-3">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                        </path>
+                    </svg>
+                    <h3 class="text-sm font-bold text-gray-900 uppercase tracking-widest">Značka</h3>
+                </div>
+                <div id="brand-refinement-list" class="max-h-60 overflow-y-auto pr-2 custom-scrollbar"></div>
+            </div>
+        </aside>
+
+        <!-- Pravý panel: Výsledky -->
+        <div class="flex-1 min-w-0">
+            <!-- Statistiky -->
+            <div class="mb-4 text-sm text-gray-500" id="stats"></div>
+
+            <!-- Nalezené kategorie (Grid) -->
+            <div id="categories-grid" class="mb-8"></div>
+
+            <!-- Nalezené produkty Header -->
+            <div class="flex items-center justify-between mb-6 pb-2 border-b-2 border-gray-200">
+                <h3 class="text-lg font-black text-gray-900 uppercase">Nalezené produkty</h3>
+                <div class="flex gap-2">
+                    <button class="px-3 py-1.5 text-xs font-bold border border-gray-200 rounded hover:bg-gray-50 uppercase tracking-tighter">Nejdražší</button>
+                    <button class="px-3 py-1.5 text-xs font-bold border-2 border-[#cc3333] text-[#cc3333] rounded hover:bg-red-50 uppercase tracking-tighter">Nejlevnější</button>
+                    <button class="px-3 py-1.5 text-xs font-bold border border-gray-200 rounded hover:bg-gray-50 uppercase tracking-tighter">Nejprodávanější</button>
+                    <button class="px-3 py-1.5 text-xs font-bold border border-gray-200 rounded hover:bg-gray-50 uppercase tracking-tighter">Nové</button>
+                </div>
+            </div>
+
+            <!-- Grid Produktů -->
+            <div id="hits"></div>
+
+            <!-- Stránkování -->
+            <div id="pagination" class="mt-14 mb-10 flex justify-center"></div>
+        </div>
+
+    </main>
+
+    <!-- JS knihovny -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/@meilisearch/instant-meilisearch@0.13.1/dist/instant-meilisearch.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.56.1/dist/instantsearch.production.min.js"></script>
+    <script src="./search_config.js"></script>
+
+    <script>
+        // Inicializace klienta z externí konfigurace
+        const msClient = instantMeiliSearch(
+            SEARCH_CONFIG.host,
+            SEARCH_CONFIG.apiKey
+        );
+
+        const search = instantsearch({
+            indexName: SEARCH_CONFIG.indexName,
+            searchClient: msClient.searchClient || msClient,
+        });
+
+        search.addWidgets([
+            // Hledání
+            instantsearch.widgets.searchBox({
+                container: "#searchbox",
+                placeholder: "Hledejte produkty, diody, rezistory...",
+                showSubmit: true,
+                showReset: true,
+                showLoadingIndicator: false,
+            }),
+
+            // Karta produktu
+            instantsearch.widgets.hits({
+                container: "#hits",
+                templates: {
+                    item: (hit) => `
+            <div class="h-full flex flex-col group">
+              <!-- Horní řada: Kód a Oblíbené -->
+              <div class="flex justify-between items-start mb-2">
+                <span class="text-[10px] text-gray-400 font-medium">Kód zboží: ${hit.id}</span>
+                <button class="text-gray-300 hover:text-red-500 transition-colors">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                </button>
+              </div>
+
+              <!-- Obrázek -->
+              <div class="aspect-square w-full mb-4 flex items-center justify-center p-2">
+                <img src="${hit.image || 'https://via.placeholder.com/400?text=Bez+fotky'}" 
+                     alt="${hit.title}" 
+                     class="max-h-full max-w-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500" />
+              </div>
+
+              <!-- Název -->
+              <h2 class="text-sm font-bold text-gray-800 leading-tight mb-3 line-clamp-2 min-h-[40px] hover:text-[#cc3333] transition-colors cursor-pointer">
+                <a href="${hit.url}" target="_blank">${instantsearch.highlight({ attribute: 'title', hit })}</a>
+              </h2>
+
+              <!-- Tabulka cen -->
+              <table class="price-table">
+                <thead>
+                  <tr>
+                    <th>Maloobchodní cena</th>
+                    <th>1 - 9 ks</th>
+                    <th>10+ ks (VC)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>${hit.price.toFixed(2)} Kč</td>
+                    <td>${hit.price_b2b_1 ? hit.price_b2b_1.toFixed(2) : hit.price.toFixed(2)} Kč</td>
+                    <td class="highlight">${hit.price_b2b_3 ? hit.price_b2b_3.toFixed(2) : hit.price.toFixed(2)} Kč</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Skladovost -->
+              <div class="flex items-center gap-1.5 text-[11px] mb-4 ${hit.stock > 0 ? 'text-green-600' : 'text-orange-500'}">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                <span class="font-bold">${hit.stock_info || (hit.stock > 0 ? 'Skladem' : 'Na dotaz')}</span>
+              </div>
+
+              <!-- Hlavní cena -->
+              <div class="mt-auto border-t border-gray-100 pt-4">
+                <div class="flex items-baseline justify-between mb-3">
+                  <div class="flex flex-col">
+                    <span class="text-[22px] font-black text-[#cc3333] leading-none">${hit.price.toFixed(2)} Kč</span>
+                    <span class="text-[11px] text-gray-400 mt-1">${hit.price_ex_vat ? hit.price_ex_vat.toFixed(2) : (hit.price / 1.21).toFixed(2)} Kč bez DPH</span>
+                  </div>
+                </div>
+
+                <!-- Ovládací prvky -->
+                <div class="flex items-center gap-2">
+                  <div class="flex items-center border border-gray-200 rounded-lg bg-gray-50 h-10 px-1">
+                    <button class="quantity-btn">-</button>
+                    <input type="text" value="10" class="w-10 text-center bg-transparent border-none focus:ring-0 text-sm font-bold" />
+                    <button class="quantity-btn">+</button>
+                  </div>
+                  <button class="add-to-cart-btn">Do košíku</button>
+                </div>
+              </div>
+            </div>
+          `,
+                },
+            }),
+
+            // Statistiky nad gridem
+            instantsearch.widgets.stats({
+                container: '#stats',
+                templates: {
+                    text(data) {
+                        return `Zobrazuji <span class="bg-gray-100 text-gray-900 font-bold px-2 py-0.5 rounded ml-1">${data.nbHits} produktů</span> <span class="text-gray-400 ml-2 font-normal">(bleskových ${data.processingTimeMS} ms)</span>`;
+                    },
+                },
+            }),
+
+            // Skvostná paginace
+            instantsearch.widgets.pagination({
+                container: "#pagination",
+                cssClasses: {
+                    list: 'flex space-x-2 bg-white shadow-sm border border-gray-100 p-1.5 rounded-xl',
+                    item: 'flex items-center justify-center w-10 h-10 rounded-lg text-sm font-bold transition-all cursor-pointer hover:bg-gray-50 text-gray-600',
+                    selectedItem: '!bg-blue-600 !text-white hover:bg-blue-700 shadow-md transform scale-105',
+                    link: 'w-full h-full flex items-center justify-center focus:outline-none',
+                    disabledItem: 'opacity-30 cursor-not-allowed hover:bg-transparent'
+                }
+            }),
+
+            // Widget Filtr Kategorie
+            instantsearch.widgets.refinementList({
+                container: "#category-refinement-list",
+                attribute: "category_hierarchy",
+                searchable: true,
+                searchablePlaceholder: 'Hledat kategorii...',
+                limit: 8,
+                showMore: true,
+                showMoreLimit: 40,
+                templates: {
+                    showMoreText: `
+            <div class="flex items-center gap-1">
+                {{#isShowingMore}}
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                Zobrazit méně
+                {{/isShowingMore}}
+                {{^isShowingMore}}
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                Rozbalit další
+                {{/isShowingMore}}
+            </div>
+            `
+                },
+                cssClasses: {
+                    searchableInput: 'w-full px-4 py-2 text-sm bg-gray-50 border border-transparent rounded-xl mb-4 outline-none focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all font-medium placeholder-gray-400',
+                    showMore: 'text-xs text-blue-600 font-bold mt-4 hover:text-blue-800 uppercase tracking-wider block w-full text-center p-2 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer'
+                }
+            }),
+
+            // Widget Filtr Značka
+            instantsearch.widgets.refinementList({
+                container: "#brand-refinement-list",
+                attribute: "brand",
+                limit: 10,
+                showMore: true,
+                templates: {
+                    showMoreText: `
+            <div class="flex items-center gap-1">
+                {{#isShowingMore}}Zobrazit méně{{/isShowingMore}}
+                {{^isShowingMore}}Všechny značky{{/isShowingMore}}
+            </div>
+            `
+                },
+                cssClasses: {
+                    showMore: 'text-xs text-blue-600 font-bold mt-4 hover:text-blue-800 uppercase tracking-wider block w-full text-center p-2 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer'
+                }
+            }),
+
+            // Custom Kategorie Grid Widget
+            {
+                render({ results, helper }) {
+                    const container = document.querySelector('#categories-grid');
+                    const facetValues = results.getFacetValues('category_hierarchy');
+                    
+                    if (!facetValues || facetValues.length === 0) {
+                        container.innerHTML = '';
+                        return;
+                    }
+
+                    // Zobrazíme prvních 12 kategorií
+                    const categories = facetValues.slice(0, 12);
+                    
+                    // Mapa kategorií na Lucide ikony
+                    const getIcon = (name) => {
+                        const n = name.toLowerCase();
+                        if (n.includes('kabel')) return 'cable';
+                        if (n.includes('diod')) return 'zap';
+                        if (n.includes('kondenzát')) return 'battery';
+                        if (n.includes('rezist')) return 'activity';
+                        if (n.includes('konek')) return 'plug';
+                        if (n.includes('tranzist')) return 'cpu';
+                        if (n.includes('napáj')) return 'power';
+                        if (n.includes('audio')) return 'speaker';
+                        if (n.includes('led')) return 'lightbulb';
+                        if (n.includes('spín')) return 'toggle-left';
+                        return 'layers';
+                    };
+
+                    container.innerHTML = `
+                        <h3 class="text-sm font-black text-gray-900 uppercase mb-4 pb-2 border-b-2 border-gray-200">Nalezené kategorie</h3>
+                        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                            ${categories.map(cat => {
+                                const categoryName = cat.name.split('|').pop().trim();
+                                const icon = getIcon(categoryName);
+                                return `
+                                    <div class="category-item group" onclick="window.filterByCategory('${cat.name.replace(/'/g, "\\'")}')">
+                                        <div class="icon-wrapper">
+                                            <i data-lucide="${icon}" class="w-8 h-8"></i>
+                                        </div>
+                                        <span>${categoryName}</span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                    
+                    // Inicializace Lucide ikon po renderu
+                    if (window.lucide) {
+                        lucide.createIcons();
+                    }
+                }
+            }
+        ]);
+
+        // Globální funkce pro filtrování z gridu
+        window.filterByCategory = (categoryName) => {
+            search.helper.toggleFacetRefinement('category_hierarchy', categoryName).search();
+        };
+
+        search.start();
+    </script>
+</body>
+
+</html>

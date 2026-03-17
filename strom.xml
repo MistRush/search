@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<CATEGORIES>
+<CATEGORY>
+<ID>_ES</ID>
+<PARENT_ID/>
+<TITLE>Elektronick� sou��stky</TITLE>
+<HIERARCHY>Elektronick� sou��stky</HIERARCHY>
+<URL>https://www.hadex.cz/c/elektronicke-soucastky</URL></CATEGORY>
+<CATEGORY>
+<ID>_ESDM</ID>
+<PARENT_ID>_ES</PARENT_ID>
+<TITLE>Diody a diodov� m�stky</TITLE>
+<HIERARCHY>Elektronick� sou��stky | Diody a diodov� m�stky</HIERARCHY>
+<URL>https://www.hadex.cz/c/diody-a-diodove-mustky</URL></CATEGORY>
+<CATEGORY>
+<ID>_ESDMUD</ID>
+<PARENT_ID>_ESDM</PARENT_ID>
+<TITLE>Univerz�ln� diody</TITLE>
+<HIERARCHY>Elektronick� sou��stky | Diody a diodov� m�stky | Univerz�ln� diody</HIERARCHY>
+<URL>https://www.hadex.cz/c/univerzalni-diody</URL></CATEGORY>
+<CATEGORY>
+<ID>_ESDMRD</ID>
+<PARENT_ID>_ESDM</PARENT_ID>
+<TITLE>Rychl� diody</TITLE>
+<HIERARCHY>Elektronick� sou��stky | Diody a diodov� m�stky | Rychl� diody</HIERARCHY>
+<URL>https://www.hadex.cz/c/rychle-diody</URL></CATEGORY>
+<CATEGORY>
+<ID>_ESDMSD</ID>
+<PARENT_ID>_ESDM</PARENT_ID>
+<TITLE>Schottkyho diody</TITLE>
+<HIERARCHY>Elektronick� sou��stky | Diody a diodov� m�stky | Schottkyho diody</HIERARCHY>
+<URL>https://www.hadex.cz/c/schottkyho-diody</URL></CATEGORY>
+<CATEGORY>
+<ID>_ESDMZD</ID>
+<PARENT_ID>_ESDM</PARENT_ID>
+<TITLE>Zenerovy diody</TITLE>
+<HIERARCHY>Elektronick� sou��stky | Diody a diodov� m�stky | Zenerovy diody</HIERARCHY>
+<URL>https://www.hadex.cz/c/zenerovy-diody</URL></CATEGORY>
+<CATEGORY>
+<ID>_ESDMVA</ID>
+<PARENT_ID>_ESDM</PARENT_ID>
+<TITLE>Varikapy</TITLE>
+<HIERARCHY>Elektronick� sou��stky | Diody a diodov� m�stky | Varikapy</HIERARCHY>
+<URL>https://www.hadex.cz/c/varikapy</URL></CATEGORY>
+<CATEGORY>
+<ID>_ESDMTR</ID>
+<PARENT_ID>_ESDM</PARENT_ID>
+<TITLE>Transily</TITLE>
+<HIERARCHY>Elektronick� sou��stky | Diody a diodov� m�stky | Transily</HIERARCHY>
+<URL>https://www.hadex.cz/c/transily</URL></CATEGORY>
+<CATEGORY>
+<ID>_ESDMUM</ID>
+<PARENT_ID>_ESDM</PARENT_ID>
+<TITLE>Usm�r�ovac� m�stky</TITLE>
+<HIERARCHY>Elektronick� sou��stky | Diody a diod

@@ -8,7 +8,8 @@ dotenv.config();
 
 // Initialize Meilisearch client (default local address)
 const client = new MeiliSearch({
-    host: 'http://127.0.0.1:7700',
+    host: process.env.MEILI_HOST || 'http://127.0.0.1:7700',
+    apiKey: process.env.MEILI_MASTER_KEY || '',
 });
 
 // XML Parser for Categories
